@@ -18,6 +18,7 @@
 //     no encuentra fallos graves ni críticos.
 //
 // Chrome: se busca en las rutas habituales de macOS y Linux; EVA_CHROME lo fija.
+// Firefox: EVA_NAVEGADOR=firefox (y EVA_FIREFOX con la ruta, si no es la habitual).
 import http from 'node:http';
 import { existsSync, readFileSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
@@ -33,7 +34,10 @@ const CHROME = process.env.EVA_CHROME ?? [
   '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
   '/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/usr/bin/chromium-browser', '/usr/bin/chromium',
 ].find(existsSync);
-if (!CHROME) { console.error('No encuentro Chrome: defina EVA_CHROME'); process.exit(2); }
+const FIREFOX = process.env.EVA_FIREFOX ?? ['/Applications/Firefox.app/Contents/MacOS/firefox', '/usr/bin/firefox'].find(existsSync);
+const EN_FIREFOX = process.env.EVA_NAVEGADOR === 'firefox';
+const NAVEGADOR = EN_FIREFOX ? FIREFOX : CHROME;
+if (!NAVEGADOR) { console.error(EN_FIREFOX ? 'No encuentro Firefox: defina EVA_FIREFOX' : 'No encuentro Chrome: defina EVA_CHROME'); process.exit(2); }
 
 const TIPOS = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css',
   '.json': 'application/json', '.png': 'image/png', '.woff2': 'font/woff2' };
@@ -88,7 +92,9 @@ const SOMBRA = `document.querySelector('#eva-asistente').shadowRoot`;
 const enSombra = (pagina, fn) => pagina.evaluate(`(${fn})(${SOMBRA})`);
 const esperarOpciones = (pagina) => pagina.waitForFunction(`${SOMBRA}.querySelector('.opciones button, .opciones a')`, { timeout: 15000 });
 
-const navegador = await puppeteer.launch({ executablePath: CHROME, headless: true, args: ['--no-sandbox'] });
+const navegador = await puppeteer.launch(EN_FIREFOX
+  ? { browser: 'firefox', executablePath: NAVEGADOR, headless: true }
+  : { executablePath: NAVEGADOR, headless: true, args: ['--no-sandbox'] });
 
 async function nuevaPagina() {
   const pagina = await navegador.newPage();
@@ -101,11 +107,12 @@ async function nuevaPagina() {
     window.__csp = [];
     document.addEventListener('securitypolicyviolation', (e) => window.__csp.push(e.violatedDirective + ' ' + (e.blockedURI || 'inline')));
   });
-  await pagina.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
+  // Sin animaciones, para que las esperas no dependan de ellas (Firefox no admite esta emulación: se usan las esperas normales).
+  try { await pagina.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]); } catch {}
   return { pagina, estado };
 }
 
-console.log(`Pruebas en navegador (${CHROME.split('/').pop()})\n`);
+console.log(`Pruebas en navegador (${EN_FIREFOX ? 'Firefox' : 'Chrome'} ${await navegador.version()})\n`);
 
 // ── 1. La página real: red, almacenamiento, enlaces ──────────────────────────
 {

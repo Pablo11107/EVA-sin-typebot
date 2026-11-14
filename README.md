@@ -32,6 +32,7 @@ python3 -m http.server 8000
 ```sh
 node pruebas.mjs                 # el motor: sin navegador ni dependencias
 npm install && node pruebas-navegador.mjs   # seguridad y accesibilidad en Chrome
+EVA_NAVEGADOR=firefox node pruebas-navegador.mjs   # lo mismo en Firefox
 ```
 
 `pruebas.mjs` recorre los 141 menús (633 pasos) y comprueba que cada texto, enlace y teléfono
@@ -85,6 +86,6 @@ archivo a la web. No hay nada más que publicar.
 
 ## Qué falta antes de producción
 
-Pruebas manuales en Safari y Firefox y una prueba con personas reales. Está probado con las
-dos baterías automáticas (motor y navegador, incluida la accesibilidad con axe-core) y a mano
-en Chrome, escritorio y móvil.
+Una prueba manual en Safari y una prueba con personas reales. Está probado con las dos
+baterías automáticas (motor y navegador, incluida la accesibilidad con axe-core) en Chrome y
+en Firefox, y a mano en Chrome, escritorio y móvil.
