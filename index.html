@@ -4,26 +4,322 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<!-- Sin 'unsafe-inline' en ningún sitio: la burbuja aplica sus estilos por adoptedStyleSheets. -->
+<!-- Sin 'unsafe-inline' en ningún sitio: ni scripts ni estilos en línea. La burbuja
+     aplica sus estilos por adoptedStyleSheets y la página usa estilo.css y arranque.js. -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
-<title>EVA sin Typebot — prototipo</title>
+<title>EVA sin Typebot · Asistente virtual de EMALSA</title>
+<meta name="description" content="La misma EVA, sin ninguna plataforma detrás: qué ha cambiado, qué se ha comprobado, cómo se instala en el servidor de EMALSA y qué cuesta mantenerla.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cpath d='M60 10C60 10 24 50 24 74a36 36 0 0 0 72 0C96 50 60 10 60 10Z' fill='%23214881'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="estilo.css">
 </head>
 <body>
-<main class="wrap">
-  <p class="rotulo">Prototipo</p>
-  <h1>EVA, <em>sin Typebot</em></h1>
-  <p class="entradilla">La misma EVA, con los mismos textos, botones y enlaces, pero sin ningún servicio detrás: un archivo de código y el archivo del flujo, servidos desde la propia web. Sin servidor, sin base de datos, sin cuenta en ningún sitio y sin marca de nadie.</p>
+<div id="progreso" aria-hidden="true"></div>
 
-  <div class="tarjetas">
-    <div><b>Lo que lee</b><p>El mismo <code>eva-chatbot.json</code> que se revisa y publica hoy. Si cambia el flujo, cambia EVA.</p></div>
-    <div><b>Lo que no hace</b><p>No guarda conversaciones, ni cookies, ni nada en el navegador. No conecta con ningún servidor: solo descarga el flujo.</p></div>
-    <div><b>Lo que no tiene</b><p>Editor visual y estadísticas de uso. Los textos se cambian en el archivo del flujo (o se redactan en Typebot y se exportan).</p></div>
+<header id="cab">
+  <div class="wrap">
+    <a class="marca" href="#hero">
+      <svg width="28" height="28" viewBox="0 0 120 120" role="img" aria-label="EVA"><defs><linearGradient id="gm" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#2BC8E8"/><stop offset="55%" stop-color="#2A72C4"/><stop offset="100%" stop-color="#214881"/></linearGradient></defs><path d="M60 10C60 10 24 50 24 74a36 36 0 0 0 72 0C96 50 60 10 60 10Z" fill="url(#gm)"/><rect x="40" y="58" width="40" height="7" rx="3.5" fill="#fff"/><rect x="34" y="72" width="52" height="7" rx="3.5" fill="#fff"/><rect x="44" y="86" width="32" height="7" rx="3.5" fill="#fff"/></svg>
+      EVA <span>sin Typebot</span>
+    </a>
+    <nav>
+      <a href="#cambios">Qué cambia</a>
+      <a href="#como">Cómo funciona</a>
+      <a href="#seguridad">Seguridad</a>
+      <a href="#servidor">En EMALSA</a>
+      <a href="#mantenimiento">Mantenimiento</a>
+      <a href="#coste">Coste</a>
+      <a href="#probar">Probarlo</a>
+    </nav>
   </div>
+</header>
 
-  <p><button type="button" class="abrir" id="abrir">Abrir EVA</button></p>
-  <p class="nota">Pruebe los mismos caminos que en la versión de Typebot: trámites, incidencias, contacto, hablar con alguien. Las pruebas automáticas (<code>pruebas.mjs</code>) recorren los 141 menús y comprueban que todo lo que muestra existe en el flujo revisado.</p>
-</main>
+<!-- ============ HÉROE ============ -->
+<section id="hero">
+  <svg class="gota-fondo" viewBox="0 0 120 120" aria-hidden="true"><path d="M60 10C60 10 24 50 24 74a36 36 0 0 0 72 0C96 50 60 10 60 10Z" fill="#2BC8E8"/></svg>
+  <div class="wrap">
+    <div class="hero-logo">
+      <svg width="62" height="62" viewBox="0 0 120 120" role="img" aria-label="EVA"><defs><linearGradient id="gh" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#2BC8E8"/><stop offset="55%" stop-color="#2A72C4"/><stop offset="100%" stop-color="#214881"/></linearGradient></defs><circle cx="60" cy="60" r="60" fill="url(#gh)"/><g transform="translate(60 61) scale(.68) translate(-60 -60)"><path d="M60 10C60 10 24 50 24 74a36 36 0 0 0 72 0C96 50 60 10 60 10Z" fill="#fff"/><rect x="40" y="58" width="40" height="7" rx="3.5" fill="#2A72C4"/><rect x="34" y="72" width="52" height="7" rx="3.5" fill="#2A72C4"/><rect x="44" y="86" width="32" height="7" rx="3.5" fill="#2A72C4"/></g></svg>
+      <div><div class="nombre">EVA</div><div class="claim">Emalsa Virtual Assistant</div></div>
+    </div>
+    <span class="etiqueta">Prototipo · sin plataforma</span>
+    <h1>La misma EVA, <em>sin nadie detrás</em>.</h1>
+    <p class="sub">Los mismos textos, botones y enlaces que ya conocen, pero sin Typebot ni ningún otro servicio: dos archivos de código y el archivo del flujo, servidos desde la web de EMALSA. Sin servidor que operar, sin base de datos, sin cuenta en ningún sitio, sin marca de nadie y sin guardar ni un dato.</p>
+    <div class="acciones">
+      <button type="button" class="boton-claro" id="abrirHero">Hablar con EVA ahora</button>
+      <a class="enlace-claro" href="#cambios">Ver qué ha cambiado</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CIFRAS ============ -->
+<section id="cifras" class="claro">
+  <div class="wrap">
+    <div class="cifras rv">
+      <div class="cifra"><div class="n">3</div><div class="t">archivos en la web: el motor, la burbuja y el flujo</div></div>
+      <div class="cifra"><div class="n">381</div><div class="t">líneas de código, sin dependencias, legibles en una tarde</div></div>
+      <div class="cifra"><div class="n">0</div><div class="t">datos guardados: ni conversaciones, ni cookies, ni sesiones</div></div>
+      <div class="cifra"><div class="n">141</div><div class="t">menús recorridos por las pruebas automáticas en cada cambio</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ QUÉ CAMBIA ============ -->
+<section id="cambios">
+  <div class="wrap">
+    <div class="cabecera-seccion rv">
+      <span class="rotulo">Qué ha cambiado</span>
+      <h2>De una plataforma a dos archivos</h2>
+      <p class="entradilla">EVA nació sobre Typebot, una herramienta para construir asistentes con inteligencia artificial, formularios, pagos e integraciones. EVA usa tres de sus piezas: texto, botones y enlaces. Hemos sustituido la plataforma por un programa que hace exactamente eso.</p>
+    </div>
+    <div class="tabla rv">
+      <table>
+        <thead><tr><th></th><th>Con Typebot</th><th>Sin Typebot</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Quién recorre el flujo</strong></td><td>El servidor de Typebot (en su nube o en uno propio de EMALSA)</td><td>El navegador del visitante, con un motor de 93 líneas</td></tr>
+          <tr><td><strong>Qué viaja por la red</strong></td><td>Cada botón pulsado se envía al servidor y vuelve la respuesta</td><td>Solo se descarga el archivo del flujo, una vez. Después, nada</td></tr>
+          <tr><td><strong>Qué se guarda</strong></td><td>Cada conversación: fecha, botones pulsados, si se completó</td><td>Nada, en ningún sitio</td></tr>
+          <tr><td><strong>Infraestructura</strong></td><td>Nube de Typebot, o servidor con Docker, base de datos, copias y actualizaciones</td><td>Tres archivos en el servidor web de emalsa.es, como una imagen más</td></tr>
+          <tr><td><strong>Dependencia</strong></td><td>Del servicio o del software de Typebot</td><td>De nadie: el código es de EMALSA</td></tr>
+          <tr><td><strong>Marca «Made with Typebot»</strong></td><td>Sí en el plan gratuito</td><td>No existe</td></tr>
+          <tr><td><strong>Editor visual</strong></td><td>Sí</td><td>No: el contenido se redacta en el archivo del flujo, o en Typebot y se exporta</td></tr>
+          <tr><td><strong>Estadísticas de uso</strong></td><td>Sí</td><td>No, salvo que se añada un contador anónimo</td></tr>
+          <tr><td><strong>Política de seguridad de la web</strong></td><td>Requiere permitir estilos en línea y conexiones a Typebot</td><td>Más estricta: ni estilos ni scripts en línea, ninguna conexión externa</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="g3 margen">
+      <div class="tarjeta rv">
+        <div class="ico" aria-hidden="true"><svg width="24" height="24" fill="none" stroke="#214881" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
+        <h3>Lo que no cambia</h3>
+        <p>El flujo es el mismo archivo que se revisa y publica hoy: 143 pantallas, 391 mensajes, 47 trámites. Mismo aspecto, mismos colores, mismo isotipo. Y el mismo ciclo de cambios: revisar, verificar, probar, publicar.</p>
+      </div>
+      <div class="tarjeta rv">
+        <div class="ico" aria-hidden="true"><svg width="24" height="24" fill="none" stroke="#214881" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.6a2 2 0 0 1-.5 2.1L8.1 9.6a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.8.3 1.7.6 2.6.7a2 2 0 0 1 1.7 2z"/></svg></div>
+        <h3>Dos diferencias a propósito</h3>
+        <p>Los botones «Llamar» muestran un botón con el número en lugar de iniciar la llamada solos: Safari bloquea lo que el usuario no pulsa, el mismo criterio que aplicamos a los formularios. Y no se registra ninguna conversación: es lo que hace al prototipo tan simple.</p>
+      </div>
+      <div class="tarjeta rv">
+        <div class="ico" aria-hidden="true"><svg width="24" height="24" fill="none" stroke="#214881" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></div>
+        <h3>Cómo se cambia un texto</h3>
+        <p>Igual que ahora: se redacta en el editor gratuito de Typebot y se exporta, o se edita el archivo directamente. El verificador del repositorio de EVA y las pruebas de este avisan de cualquier error antes de publicar. Publicar es copiar un archivo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CÓMO FUNCIONA ============ -->
+<section id="como" class="claro">
+  <div class="wrap">
+    <div class="cabecera-seccion rv">
+      <span class="rotulo">Cómo funciona</span>
+      <h2>El flujo, el motor y la burbuja</h2>
+      <p class="entradilla">Cuando un visitante abre EVA, su navegador descarga el archivo del flujo desde la web de EMALSA y lo recorre allí mismo. Ningún dato sale hacia ningún servidor; solo entra el archivo.</p>
+    </div>
+    <div class="cadena rv">
+      <div class="paso"><span class="num">1</span><h3>El flujo</h3><p><code>eva-chatbot.json</code>: las preguntas, las respuestas, los botones y a dónde lleva cada uno. Es el mismo archivo que se revisa en el repositorio de EVA.</p></div>
+      <div class="flecha" aria-hidden="true">→</div>
+      <div class="paso"><span class="num">2</span><h3>El motor</h3><p><code>motor.js</code>, 93 líneas. Lee el flujo y decide qué mostrar tras cada botón. Solo entiende texto, botones y enlaces; si encontrara otra cosa, se detiene en vez de improvisar.</p></div>
+      <div class="flecha" aria-hidden="true">→</div>
+      <div class="paso"><span class="num">3</span><h3>La burbuja</h3><p><code>eva.js</code>, 288 líneas. Pinta la conversación con el aspecto de EVA, aislada de los estilos de la web, y convierte cada botón pulsado en el siguiente paso.</p></div>
+    </div>
+    <div class="g2 margen">
+      <div class="tarjeta rv">
+        <h3>Qué pasa al pulsar un botón</h3>
+        <p>La burbuja le dice al motor qué botón se ha pulsado (por su identificador, nunca por texto libre). El motor busca a dónde lleva ese botón en el flujo, recoge los mensajes del siguiente paso y los devuelve. La burbuja los muestra, con un breve «escribiendo», y presenta los botones siguientes. Si el camino termina, ofrece volver al inicio.</p>
+      </div>
+      <div class="tarjeta rv">
+        <h3>Qué no puede pasar</h3>
+        <p>No hay dónde escribir, así que no hay instrucciones que inyectar ni modelo al que engañar. No hay variables, así que nada del visitante entra en la conversación. No hay servidor, así que no hay sesiones ajenas que leer ni base de datos que llenar. Lo que EVA muestra existe, palabra por palabra, en el flujo revisado.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SEGURIDAD ============ -->
+<section id="seguridad" class="oscuro">
+  <div class="wrap">
+    <div class="cabecera-seccion rv">
+      <span class="rotulo">Seguridad</span>
+      <h2>Qué se ha comprobado</h2>
+      <p class="entradilla">Menos piezas, menos superficie. Cada afirmación de esta lista está respaldada por una prueba automática que se ejecuta en cada cambio, por una revisión del código, o está marcada como pendiente.</p>
+    </div>
+    <div class="tabla oscura rv">
+      <table>
+        <thead><tr><th>Comprobación</th><th>Qué protege</th><th>Cómo se ha comprobado</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Recorrido completo del flujo</strong></td><td>Que no haya menús sin salida ni caminos rotos: 141 menús, 633 pasos, hasta 10 niveles</td><td><span class="sello ok">Prueba automática</span></td></tr>
+          <tr><td><strong>Todo lo mostrado existe en el flujo</strong></td><td>Que ningún texto, enlace o teléfono salga de otro sitio: 474 enlaces y 10 llamadas verificados</td><td><span class="sello ok">Prueba automática</span></td></tr>
+          <tr><td><strong>Solo botones</strong></td><td>Una respuesta que no sea el identificador de un botón se rechaza; también un intento de inyección</td><td><span class="sello ok">Prueba automática</span></td></tr>
+          <tr><td><strong>Un flujo manipulado detiene el motor</strong></td><td>Si alguien añadiera al archivo un bloque de IA o un campo de texto, EVA se para en vez de ejecutarlo</td><td><span class="sello ok">Prueba automática</span></td></tr>
+          <tr><td><strong>Sin <code>innerHTML</code></strong></td><td>Cada elemento se construye nodo a nodo: no hay forma de colar HTML o scripts en la ventana</td><td><span class="sello ok">Prueba automática</span></td></tr>
+          <tr><td><strong>Enlaces solo a emalsa.es y teléfonos oficiales</strong></td><td>Cualquier otra URL se muestra como texto plano, sin enlace. Misma lista que el verificador de EVA</td><td><span class="sello ok">Prueba automática</span> <span class="sello rev">Código</span></td></tr>
+          <tr><td><strong>Nada guardado en el navegador</strong></td><td>Ni cookies, ni almacenamiento local, ni sesiones</td><td><span class="sello ok">Prueba automática</span></td></tr>
+          <tr><td><strong>Sin CDN ni dependencias</strong></td><td>Nada que descargar de terceros, ninguna versión que pueda cambiar sin aviso</td><td><span class="sello ok">Prueba automática</span></td></tr>
+          <tr><td><strong>Política de seguridad estricta</strong></td><td>Esta página funciona sin estilos ni scripts en línea y sin conexiones externas; la burbuja no exige relajarla</td><td><span class="sello ok">Esta página</span></td></tr>
+          <tr><td><strong>Funciona en Chrome, escritorio y móvil</strong></td><td>Recorrido Trámites → Contrato sin errores de consola</td><td><span class="sello rev">Manual</span></td></tr>
+          <tr><td><strong>Safari y Firefox a mano, accesibilidad, personas reales</strong></td><td>Lo que falta antes de producción: horas, no semanas</td><td><span class="sello pend">Pendiente</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="g2 margen">
+      <div class="tarjeta rv">
+        <h3>Protección de datos</h3>
+        <p>Al no guardar conversaciones, el asistente no trata datos personales. Quedan los registros de acceso del servidor web de EMALSA, que existen igual para cualquier página y ya están cubiertos por la política de la empresa. No hay encargado del tratamiento porque no hay tratamiento que encargar. El Reglamento de IA no aplica: no hay sistema de IA.</p>
+      </div>
+      <div class="tarjeta rv">
+        <h3>Lo que un atacante se encuentra</h3>
+        <p>Un archivo público con el contenido de la web de EMALSA en forma de conversación, y un programa que solo sabe recorrerlo. No hay API que llamar desde otra web, ni resultados que llenar, ni cuentas que adivinar, ni servidor que saturar más allá del que ya sirve emalsa.es. La superficie es la de la propia página.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ EN EL SERVIDOR DE EMALSA ============ -->
+<section id="servidor">
+  <div class="wrap">
+    <div class="cabecera-seccion rv">
+      <span class="rotulo">En el servidor de EMALSA</span>
+      <h2>Se instala como una imagen más</h2>
+      <p class="entradilla">No hace falta un servidor nuevo, ni Docker, ni una base de datos. EVA vive en el mismo servidor web que ya sirve emalsa.es, en una carpeta junto a las imágenes y las hojas de estilo.</p>
+    </div>
+    <div class="g3">
+      <div class="tarjeta paso-inst rv"><span class="num">1</span><h3>Copiar tres archivos</h3><p><code>eva.js</code>, <code>motor.js</code> y <code>eva-chatbot.json</code>, por ejemplo en <code>emalsa.es/eva/</code>. Son 20 KB de código y 680 KB de contenido.</p></div>
+      <div class="tarjeta paso-inst rv"><span class="num">2</span><h3>Pegar cinco líneas</h3><p>Antes de <code>&lt;/body&gt;</code> en las páginas donde deba aparecer la burbuja. El bloque está en el repositorio, listo para copiar.</p></div>
+      <div class="tarjeta paso-inst rv"><span class="num">3</span><h3>Una línea de política de seguridad</h3><p>Si la web tiene Content-Security-Policy, basta con permitir scripts, conexiones e imágenes del propio sitio. No hace falta abrir nada hacia fuera.</p></div>
+    </div>
+    <div class="cabecera-seccion margen rv">
+      <h2 class="h2-menor">Dónde se soporta cada cosa</h2>
+      <p class="entradilla">Tres piezas, tres lugares, y en ninguno aparece una tarea nueva para el equipo de sistemas.</p>
+    </div>
+    <div class="tabla rv">
+      <table>
+        <thead><tr><th>Pieza</th><th>Dónde vive</th><th>Quién la cuida</th></tr></thead>
+        <tbody>
+          <tr><td><strong>El contenido</strong> (el flujo)</td><td>Repositorio de EVA, con todas sus versiones; una copia en el servidor web</td><td>El responsable de contenido, con el verificador y las pruebas</td></tr>
+          <tr><td><strong>El código</strong> (motor y burbuja)</td><td>Este repositorio, público y auditable; una copia en el servidor web. Puede trasladarse al repositorio corporativo de EMALSA</td><td>Quien mantiene EVA. No necesita cambios salvo que cambie lo que EVA hace</td></tr>
+          <tr><td><strong>El alojamiento</strong></td><td>El servidor web de emalsa.es, el que ya existe</td><td>Sistemas de EMALSA, como el resto de la web: no añade ninguna tarea</td></tr>
+          <tr><td><strong>Base de datos, Docker, cuentas, certificados, copias</strong></td><td colspan="2">No existen. No hay nada que operar, actualizar, copiar ni purgar</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="nota-ancha rv">
+      <div class="ico" aria-hidden="true"><svg width="24" height="24" fill="none" stroke="#214881" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M3 17l5-5 4 4 8-8"/><path d="M15 8h5v5"/></svg></div>
+      <div><h4>Si EMALSA quiere saber qué pregunta la gente</h4><p>Se puede añadir un contador anónimo de botones pulsados (sin sesión, sin IP, sin cookies) que escriba en el propio servidor web de la empresa. Son unas pocas líneas más y una decisión que puede tomarse más adelante, con los datos en casa desde el primer día.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MANTENIMIENTO ============ -->
+<section id="mantenimiento" class="claro">
+  <div class="wrap">
+    <div class="cabecera-seccion rv">
+      <span class="rotulo">Mantenimiento</span>
+      <h2>Solo el contenido</h2>
+      <p class="entradilla">El manual de mantenimiento de EVA estima entre dos y cuatro horas al mes, casi todas dedicadas a que lo que dice siga siendo cierto. Sin Typebot, esa parte no cambia y el resto desaparece.</p>
+    </div>
+    <div class="tabla rv">
+      <table>
+        <thead><tr><th>Tarea</th><th>Cada cuánto</th><th>Con Typebot en servidor propio</th><th>Sin Typebot</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Cambiar un texto, un enlace o un trámite</strong></td><td>Cuando cambie la realidad</td><td>Editor visual, verificador, pruebas, publicar</td><td>Archivo del flujo (o Typebot gratuito y exportar), verificador, pruebas, copiar el archivo</td></tr>
+          <tr><td><strong>Revisar los enlaces a emalsa.es</strong></td><td>Semanal, 10 minutos</td><td>Igual (automatizable)</td><td>Igual (automatizable)</td></tr>
+          <tr><td><strong>Revisión de uso</strong></td><td>Mensual</td><td>1–2 horas con las estadísticas</td><td>No hay estadísticas, salvo el contador opcional</td></tr>
+          <tr><td><strong>Actualizar el software</strong></td><td>Mensual</td><td>1–2 horas: copia previa, nuevas versiones, pruebas</td><td class="bien">Nunca: no hay software de terceros</td></tr>
+          <tr><td><strong>Copias de seguridad</strong></td><td>Diarias</td><td>Automáticas, de la base de datos; vigilar que funcionen</td><td class="bien">Ninguna: el repositorio guarda todas las versiones</td></tr>
+          <tr><td><strong>Purga de conversaciones</strong></td><td>Diaria</td><td>Automática, a los 90 días</td><td class="bien">No hay conversaciones</td></tr>
+          <tr><td><strong>Certificados, proxy, cuentas, accesos</strong></td><td>Anual</td><td>Revisar accesos y renovaciones</td><td class="bien">No aplica</td></tr>
+          <tr><td><strong>Comprobar navegadores</strong></td><td>Trimestral, 30 minutos</td><td>Lo hace Typebot</td><td>Abrir EVA en Chrome, Safari y Firefox</td></tr>
+          <tr><td><strong>Si algo falla</strong></td><td>—</td><td>Registros de cinco servicios; guía de fallos</td><td>Casi siempre, el archivo no se copió o la política de seguridad no lo permite</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="g2 margen">
+      <div class="tarjeta rv"><h3>Quién hace qué</h3><p><b>Responsable de contenido:</b> los cambios, la revisión de enlaces y la comprobación trimestral de navegadores. <b>Sistemas de EMALSA:</b> nada específico de EVA; el servidor web ya es suyo. <b>Quien mantiene el código:</b> solo si algún día EVA tiene que hacer algo nuevo.</p></div>
+      <div class="tarjeta rv"><h3>Qué pasa si quien lo hizo no está</h3><p>El código cabe en seis folios y está comentado en castellano; cualquier persona con conocimientos de web lo entiende en una tarde. El contenido es un archivo de texto con historial completo. No hay contraseñas, cuentas ni servicios que heredar.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COSTE ============ -->
+<section id="coste">
+  <div class="wrap">
+    <div class="cabecera-seccion rv">
+      <span class="rotulo">Coste estimado</span>
+      <h2>Qué cuesta cada vía al mes</h2>
+      <p class="entradilla">Tres formas de tener la misma EVA. Las cifras iniciales son una estimación orientativa, no un presupuesto: cambie las horas y las tarifas por las de EMALSA y el resultado se recalcula al momento.</p>
+    </div>
+    <div class="calc rv">
+      <form class="calc-datos" id="calculadora">
+        <div class="campo">
+          <div class="fila-et"><label for="cContenido">Horas al mes de mantenimiento de contenido</label><output for="cContenido" id="oContenido"></output></div>
+          <p class="ayuda">Igual en las tres vías. El manual estima entre 2 y 4.</p>
+          <input type="range" id="cContenido" min="0" max="12" step="0.5" value="3">
+        </div>
+        <div class="campo">
+          <div class="fila-et"><label for="cTarifaContenido">Coste de una hora de ese trabajo</label><output for="cTarifaContenido" id="oTarifaContenido"></output></div>
+          <input type="range" id="cTarifaContenido" min="15" max="80" step="1" value="35">
+        </div>
+        <div class="campo">
+          <div class="fila-et"><label for="cSistemas">Horas al mes de sistemas con Typebot en servidor propio</label><output for="cSistemas" id="oSistemas"></output></div>
+          <p class="ayuda">Actualización mensual, vigilar copias, certificados y accesos.</p>
+          <input type="range" id="cSistemas" min="0" max="10" step="0.5" value="2">
+        </div>
+        <div class="campo">
+          <div class="fila-et"><label for="cTarifaSistemas">Coste de una hora de sistemas</label><output for="cTarifaSistemas" id="oTarifaSistemas"></output></div>
+          <input type="range" id="cTarifaSistemas" min="15" max="90" step="1" value="40">
+        </div>
+        <div class="campo">
+          <label for="cServidor">Servidor para Typebot, en euros al mes</label>
+          <p class="ayuda">0 si se usa un servidor que ya existe; un servidor virtual pequeño cuesta entre 20 y 40 €.</p>
+          <input type="number" id="cServidor" min="0" max="1000" step="1" value="30" inputmode="numeric">
+        </div>
+        <div class="campo">
+          <label for="cNube">Plan de la nube de Typebot, en euros al mes</label>
+          <p class="ayuda">Starter cuesta 39 $ al mes (sin marca) y Pro, 89 $.</p>
+          <input type="number" id="cNube" min="0" max="2000" step="1" value="40" inputmode="numeric">
+        </div>
+      </form>
+      <div class="calc-resultado" aria-live="polite">
+        <h3>Cada mes</h3>
+        <div class="res"><div class="n" id="rNube"></div><div class="t">Nube de Typebot</div><div class="desglose" id="dNube"></div></div>
+        <div class="res"><div class="n" id="rPropio"></div><div class="t">Typebot en servidor propio</div><div class="desglose" id="dPropio"></div></div>
+        <div class="res total"><div class="n" id="rSin"></div><div class="t">Sin Typebot</div><div class="desglose" id="dSin"></div></div>
+        <div class="res"><div class="n" id="rAhorro"></div><div class="t">al año frente al servidor propio</div></div>
+      </div>
+    </div>
+    <div class="g3 margen">
+      <div class="tarjeta rv"><h3>Puesta en marcha</h3><p><b>Nube:</b> ya está. <b>Servidor propio:</b> una tarde de sistemas (4–8 horas) más la batería de ataques desde fuera. <b>Sin Typebot:</b> copiar tres archivos y pegar un bloque, más las pruebas manuales pendientes (unas 4 horas).</p></div>
+      <div class="tarjeta rv"><h3>Lo que no está en el cálculo</h3><p>El tiempo de quien decide, la revisión de accesibilidad, el contador de uso si se añade, y cualquier ampliación futura (IA, WhatsApp, cita previa), que en las tres vías se presupuesta aparte.</p></div>
+      <div class="tarjeta rv"><h3>Por qué la diferencia es pequeña en euros</h3><p>Porque el grueso del coste de EVA es el contenido, y ese es igual en las tres. Lo que elimina esta vía no es tanto dinero como dependencia, piezas que pueden fallar y tareas que alguien tiene que acordarse de hacer.</p></div>
+    </div>
+    <p class="pie-calc rv">Estimación orientativa con valores de ejemplo. Las tarifas de Typebot están publicadas en dólares; conviene confirmarlas antes de contratar.</p>
+  </div>
+</section>
+
+<!-- ============ PROBARLO ============ -->
+<section id="probar" class="oscuro">
+  <div class="wrap">
+    <div class="probar-caja rv">
+      <div>
+        <span class="rotulo">Pruébelo</span>
+        <h2>Es EVA. Compruébelo.</h2>
+        <p class="entradilla">Recorra los mismos caminos que en la versión con Typebot: trámites, incidencias, contacto, hablar con alguien. Todo lo que ve sale del flujo revisado; nada de lo que haga se guarda.</p>
+        <div class="acciones">
+          <button type="button" class="boton-claro" id="abrirBot">Abrir EVA</button>
+          <a class="enlace-claro" href="https://github.com/Pablo11107/EVA-sin-typebot" rel="noopener">Ver el código y las pruebas</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>EVA · Emalsa Virtual Assistant — prototipo sin Typebot</span>
+    <span>Flujo v9 · noviembre de 2026 · página de demostración, no es un canal oficial de EMALSA</span>
+  </div>
+</footer>
+
 <script type="module" src="arranque.js"></script>
 </body>
 </html>
