@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<!-- Sin 'unsafe-inline' en ningún sitio: la burbuja aplica sus estilos por adoptedStyleSheets. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>EVA sin Typebot — prototipo</title>
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+<main class="wrap">
+  <p class="rotulo">Prototipo</p>
+  <h1>EVA, <em>sin Typebot</em></h1>
+  <p class="entradilla">La misma EVA, con los mismos textos, botones y enlaces, pero sin ningún servicio detrás: un archivo de código y el archivo del flujo, servidos desde la propia web. Sin servidor, sin base de datos, sin cuenta en ningún sitio y sin marca de nadie.</p>
+
+  <div class="tarjetas">
+    <div><b>Lo que lee</b><p>El mismo <code>eva-chatbot.json</code> que se revisa y publica hoy. Si cambia el flujo, cambia EVA.</p></div>
+    <div><b>Lo que no hace</b><p>No guarda conversaciones, ni cookies, ni nada en el navegador. No conecta con ningún servidor: solo descarga el flujo.</p></div>
+    <div><b>Lo que no tiene</b><p>Editor visual y estadísticas de uso. Los textos se cambian en el archivo del flujo (o se redactan en Typebot y se exportan).</p></div>
+  </div>
+
+  <p><button type="button" class="abrir" id="abrir">Abrir EVA</button></p>
+  <p class="nota">Pruebe los mismos caminos que en la versión de Typebot: trámites, incidencias, contacto, hablar con alguien. Las pruebas automáticas (<code>pruebas.mjs</code>) recorren los 141 menús y comprueban que todo lo que muestra existe en el flujo revisado.</p>
+</main>
+<script type="module" src="arranque.js"></script>
+</body>
+</html>
