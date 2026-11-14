@@ -12,6 +12,7 @@ El flujo (`flujo/eva-chatbot.json`) es el mismo archivo que se revisa y publica 
 | `motor.js` | Lee el flujo y decide qué mostrar en cada paso. Solo entiende texto, botones y redirecciones; con cualquier otro bloque se detiene |
 | `eva.js` | La burbuja: Shadow DOM, sin `innerHTML`, enlaces solo a emalsa.es o a los teléfonos oficiales, estilos sin `'unsafe-inline'` |
 | `pruebas.mjs` | Recorre todos los caminos del flujo (141 menús) y comprueba que lo que muestra existe tal cual en el flujo; revisa también la burbuja |
+| `pruebas-navegador.mjs` | En Chrome: nada sale del sitio ni se guarda, la CSP bloquea inyecciones, un flujo envenenado se muestra como texto, teclado y axe-core |
 | `index.html`, `arranque.js`, `estilo.css` | Página de demostración |
 | `flujo/eva-chatbot.json` | Copia del flujo revisado (v9) |
 | `capturas/` | Capturas en escritorio y móvil |
@@ -29,13 +30,21 @@ python3 -m http.server 8000
 ## Probarlo
 
 ```sh
-node pruebas.mjs
+node pruebas.mjs                 # el motor: sin navegador ni dependencias
+npm install && node pruebas-navegador.mjs   # seguridad y accesibilidad en Chrome
 ```
 
-Recorre los 141 menús (633 pasos) y comprueba que cada texto, enlace y teléfono existe en el
-flujo revisado, que ningún menú se queda sin salida, que una opción que no es un botón se
-rechaza y que un bloque de IA en el flujo detiene el motor en vez de ejecutarse. Se ejecuta en
-cada push (`.github/workflows/pruebas.yml`).
+`pruebas.mjs` recorre los 141 menús (633 pasos) y comprueba que cada texto, enlace y teléfono
+existe en el flujo revisado, que ningún menú se queda sin salida, que una opción que no es un
+botón se rechaza y que un bloque de IA en el flujo detiene el motor en vez de ejecutarse.
+
+`pruebas-navegador.mjs` levanta un servidor local y, en Chrome: comprueba que ninguna petición
+sale del sitio y que nada queda guardado; intenta inyectar scripts, estilos, conexiones e
+imágenes externas y comprueba que la CSP los bloquea; carga un flujo envenenado (HTML,
+`onerror`, enlaces `javascript:` y `data:`, dominios parecidos, teléfonos no oficiales, un
+bloque de IA) y comprueba que todo se muestra como texto o que EVA no arranca; recorre la
+burbuja con teclado y pasa axe-core (WCAG 2.1 AA) sin fallos graves ni críticos. Las dos se
+ejecutan en cada push (`.github/workflows/pruebas.yml`).
 
 ## Ponerlo en una web
 
@@ -47,10 +56,15 @@ cada push (`.github/workflows/pruebas.yml`).
      iniciarEVA({ flujo: '/eva/eva-chatbot.json' });
    </script>
    ```
-3. Si la web tiene Content-Security-Policy, basta con `script-src 'self'`, `connect-src 'self'`
-   e `img-src 'self' data:`. No hace falta `'unsafe-inline'` en navegadores de 2023 en adelante
-   (Chrome, Edge, Firefox, Safari 16.4); en los anteriores la burbuja usa una hoja de estilos
-   clásica y sí lo necesita.
+3. Cabeceras del servidor web, recomendadas:
+   - `Content-Security-Policy` con `script-src 'self'`, `connect-src 'self'`, `img-src 'self' data:`
+     y `frame-ancestors 'self'` (nadie puede incrustar la página en otra web). No hace falta
+     `'unsafe-inline'` en navegadores de 2023 en adelante (Chrome, Edge, Firefox, Safari 16.4); en
+     los anteriores la burbuja usa una hoja de estilos clásica y sí lo necesita.
+   - `Cross-Origin-Resource-Policy: same-origin` y ningún `Access-Control-Allow-Origin` en
+     `/eva/`: el archivo del flujo y el código solo se descargan desde emalsa.es. (En esta
+     demostración, GitHub Pages envía CORS abierto y no permite cabeceras propias.)
+   - `X-Content-Type-Options: nosniff`.
 
 Opciones de `iniciarEVA`: `flujo` (URL del JSON), `color`, `nombre`, `subtitulo`, `pie`,
 `fuente`, `invitacion` (`false` o `{ texto, retraso }`). Devuelve `{ abrir, cerrar, reiniciar }`.
@@ -71,5 +85,6 @@ archivo a la web. No hay nada más que publicar.
 
 ## Qué falta antes de producción
 
-Pruebas manuales en Safari y Firefox, una revisión de accesibilidad y una prueba con personas
-reales. Está probado con las pruebas automáticas y en Chrome (escritorio y móvil).
+Pruebas manuales en Safari y Firefox y una prueba con personas reales. Está probado con las
+dos baterías automáticas (motor y navegador, incluida la accesibilidad con axe-core) y a mano
+en Chrome, escritorio y móvil.

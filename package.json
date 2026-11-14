@@ -1,0 +1,13 @@
+{
+  "name": "eva-sin-typebot",
+  "private": true,
+  "description": "EVA, el asistente virtual de EMALSA, sin Typebot. Las dependencias son solo para las pruebas en navegador; la burbuja no tiene ninguna.",
+  "type": "module",
+  "scripts": {
+    "test": "node pruebas.mjs && node pruebas-navegador.mjs"
+  },
+  "devDependencies": {
+    "axe-core": "^4.10.0",
+    "puppeteer-core": "^23.11.1"
+  }
+}

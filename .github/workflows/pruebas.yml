@@ -17,3 +17,8 @@ jobs:
           persist-credentials: false
       # Recorre todos los caminos del flujo con el motor y revisa la burbuja.
       - run: node pruebas.mjs
+      # Seguridad y accesibilidad en Chrome (el runner de GitHub lo trae instalado).
+      - run: npm ci --no-audit --no-fund
+      - run: node pruebas-navegador.mjs
+        env:
+          EVA_CHROME: /usr/bin/google-chrome

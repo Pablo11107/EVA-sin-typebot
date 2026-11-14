@@ -33,6 +33,7 @@
   </div>
 </header>
 
+<main>
 <!-- ============ HÉROE ============ -->
 <section id="hero">
   <svg class="gota-fondo" viewBox="0 0 120 120" aria-hidden="true"><path d="M60 10C60 10 24 50 24 74a36 36 0 0 0 72 0C96 50 60 10 60 10Z" fill="#2BC8E8"/></svg>
@@ -73,7 +74,7 @@
     </div>
     <div class="tabla rv">
       <table>
-        <thead><tr><th></th><th>Con Typebot</th><th>Sin Typebot</th></tr></thead>
+        <thead><tr><th><span class="oculto">Aspecto</span></th><th>Con Typebot</th><th>Sin Typebot</th></tr></thead>
         <tbody>
           <tr><td><strong>Quién recorre el flujo</strong></td><td>El servidor de Typebot (en su nube o en uno propio de EMALSA)</td><td>El navegador del visitante, con un motor de 93 líneas</td></tr>
           <tr><td><strong>Qué viaja por la red</strong></td><td>Cada botón pulsado se envía al servidor y vuelve la respuesta</td><td>Solo se descarga el archivo del flujo, una vez. Después, nada</td></tr>
@@ -156,8 +157,12 @@
           <tr><td><strong>Nada guardado en el navegador</strong></td><td>Ni cookies, ni almacenamiento local, ni sesiones</td><td><span class="sello ok">Prueba automática</span></td></tr>
           <tr><td><strong>Sin CDN ni dependencias</strong></td><td>Nada que descargar de terceros, ninguna versión que pueda cambiar sin aviso</td><td><span class="sello ok">Prueba automática</span></td></tr>
           <tr><td><strong>Política de seguridad estricta</strong></td><td>Esta página funciona sin estilos ni scripts en línea y sin conexiones externas; la burbuja no exige relajarla</td><td><span class="sello ok">Esta página</span></td></tr>
-          <tr><td><strong>Funciona en Chrome, escritorio y móvil</strong></td><td>Recorrido Trámites → Contrato sin errores de consola</td><td><span class="sello rev">Manual</span></td></tr>
-          <tr><td><strong>Safari y Firefox a mano, accesibilidad, personas reales</strong></td><td>Lo que falta antes de producción: horas, no semanas</td><td><span class="sello pend">Pendiente</span></td></tr>
+          <tr><td><strong>Nada sale del sitio</strong></td><td>En una conversación completa, ninguna petición va a otro dominio y conversar no genera ninguna petición nueva</td><td><span class="sello ok">Prueba en navegador</span></td></tr>
+          <tr><td><strong>La CSP aguanta una inyección</strong></td><td>Un script o un atributo <code>style</code> inyectados no se aplican; una conexión o una imagen hacia otro dominio se bloquean (sin balizas de seguimiento posibles)</td><td><span class="sello ok">Prueba en navegador</span></td></tr>
+          <tr><td><strong>Un flujo envenenado no hace daño</strong></td><td>HTML, <code>&lt;script&gt;</code>, <code>onerror</code>, enlaces <code>javascript:</code> y <code>data:</code>, dominios parecidos y teléfonos no oficiales se muestran como texto plano; un bloque de IA impide arrancar</td><td><span class="sello ok">Prueba en navegador</span></td></tr>
+          <tr><td><strong>Accesible con teclado y lector de pantalla</strong></td><td>Tab llega al botón, Enter abre y elige, Escape cierra y devuelve el foco; roles <code>dialog</code> y <code>log</code>, etiquetas en todos los botones; axe-core (WCAG 2.1 AA) sin fallos graves ni críticos</td><td><span class="sello ok">Prueba en navegador</span></td></tr>
+          <tr><td><strong>Funciona en Chrome, escritorio y móvil</strong></td><td>Las pruebas en navegador se ejecutan en Chrome en cada cambio</td><td><span class="sello ok">Prueba en navegador</span></td></tr>
+          <tr><td><strong>Safari y Firefox a mano, personas reales</strong></td><td>Lo que falta antes de producción: horas, no semanas</td><td><span class="sello pend">Pendiente</span></td></tr>
         </tbody>
       </table>
     </div>
@@ -168,7 +173,7 @@
       </div>
       <div class="tarjeta rv">
         <h3>Lo que un atacante se encuentra</h3>
-        <p>Un archivo público con el contenido de la web de EMALSA en forma de conversación, y un programa que solo sabe recorrerlo. No hay API que llamar desde otra web, ni resultados que llenar, ni cuentas que adivinar, ni servidor que saturar más allá del que ya sirve emalsa.es. La superficie es la de la propia página.</p>
+        <p>Un archivo público con el contenido de la web de EMALSA en forma de conversación, y un programa que solo sabe recorrerlo. No hay API que llamar desde otra web, ni resultados que llenar, ni cuentas que adivinar, ni servidor que saturar más allá del que ya sirve emalsa.es. La superficie es la de la propia página. Esta demostración, en GitHub Pages, no puede enviar cabeceras: por eso cualquier web podría incrustarla o descargar su flujo (CORS abierto). En emalsa.es, tres cabeceras lo cierran (ver «En el servidor de EMALSA»).</p>
       </div>
     </div>
   </div>
@@ -185,7 +190,7 @@
     <div class="g3">
       <div class="tarjeta paso-inst rv"><span class="num">1</span><h3>Copiar tres archivos</h3><p><code>eva.js</code>, <code>motor.js</code> y <code>eva-chatbot.json</code>, por ejemplo en <code>emalsa.es/eva/</code>. Son 20 KB de código y 680 KB de contenido.</p></div>
       <div class="tarjeta paso-inst rv"><span class="num">2</span><h3>Pegar cinco líneas</h3><p>Antes de <code>&lt;/body&gt;</code> en las páginas donde deba aparecer la burbuja. El bloque está en el repositorio, listo para copiar.</p></div>
-      <div class="tarjeta paso-inst rv"><span class="num">3</span><h3>Una línea de política de seguridad</h3><p>Si la web tiene Content-Security-Policy, basta con permitir scripts, conexiones e imágenes del propio sitio. No hace falta abrir nada hacia fuera.</p></div>
+      <div class="tarjeta paso-inst rv"><span class="num">3</span><h3>Tres cabeceras en el servidor</h3><p>Content-Security-Policy que permita solo el propio sitio; <code>frame-ancestors 'self'</code> para que nadie incruste la página en la suya; y <code>Cross-Origin-Resource-Policy: same-origin</code>, sin CORS, para que el archivo del flujo solo se descargue desde emalsa.es.</p></div>
     </div>
     <div class="cabecera-seccion margen rv">
       <h2 class="h2-menor">Dónde se soporta cada cosa</h2>
@@ -204,7 +209,7 @@
     </div>
     <div class="nota-ancha rv">
       <div class="ico" aria-hidden="true"><svg width="24" height="24" fill="none" stroke="#214881" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M3 17l5-5 4 4 8-8"/><path d="M15 8h5v5"/></svg></div>
-      <div><h4>Si EMALSA quiere saber qué pregunta la gente</h4><p>Se puede añadir un contador anónimo de botones pulsados (sin sesión, sin IP, sin cookies) que escriba en el propio servidor web de la empresa. Son unas pocas líneas más y una decisión que puede tomarse más adelante, con los datos en casa desde el primer día.</p></div>
+      <div><h3 class="h3-nota">Si EMALSA quiere saber qué pregunta la gente</h3><p>Se puede añadir un contador anónimo de botones pulsados (sin sesión, sin IP, sin cookies) que escriba en el propio servidor web de la empresa. Son unas pocas líneas más y una decisión que puede tomarse más adelante, con los datos en casa desde el primer día.</p></div>
     </div>
   </div>
 </section>
@@ -312,6 +317,7 @@
     </div>
   </div>
 </section>
+</main>
 
 <footer>
   <div class="wrap">

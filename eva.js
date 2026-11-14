@@ -120,7 +120,7 @@ const ESTILOS = `
   .opciones a.llamar { background: var(--primario); color: #fff; }
   .opciones .fin { border-style: dashed; }
 
-  .pie { padding: 8px 14px; font-size: 11.5px; color: #6b7a8c; text-align: center; border-top: 1px solid #e6ebf1; }
+  .pie { padding: 8px 14px; font-size: 11.5px; color: #5b6b7f; text-align: center; border-top: 1px solid #e6ebf1; }
 
   @media (max-width: 720px) {
     .ventana { position: fixed; inset: 0; width: auto; height: auto; border-radius: 0; bottom: 0; }
@@ -160,7 +160,7 @@ export async function iniciarEVA(opciones = {}) {
   raiz.style.setProperty('--fuente', opciones.fuente ?? 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif');
   raiz.style.setProperty('--primario', primario);
   raiz.style.setProperty('--acento', '#2BC8E8');
-  raiz.style.setProperty('--acento-texto', '#2A72C4');
+  raiz.style.setProperty('--acento-texto', '#1F5FA8');
   raiz.style.setProperty('--fondo', bot.theme?.general?.background?.content ?? '#FFFFFF');
   raiz.style.setProperty('--texto', '#1C2B3A');
   raiz.style.setProperty('--anfitrion-fondo', tema.hostBubbles?.backgroundColor ?? '#F1F4F8');

@@ -7,12 +7,22 @@
 // con un error en vez de improvisar: es la misma garantía que en Typebot,
 // sin modelo de lenguaje, sin texto libre y sin variables.
 
+const ADMITIDOS = new Set(['text', 'choice input', 'Redirect']);
+
 export function crearMotor(flujo) {
   const bot = flujo.typebot ?? flujo;
   const grupos = new Map(bot.groups.map((g) => [g.id, g]));
   const aristas = new Map(bot.edges.map((e) => [e.id, e]));
   const inicio = (bot.events ?? []).find((e) => e.type === 'start');
   if (!inicio) throw new Error('el flujo no tiene evento de inicio');
+
+  // Se comprueba todo el flujo al cargarlo, no al llegar a cada bloque: un
+  // bloque no admitido en cualquier rincón impide arrancar EVA.
+  for (const grupo of bot.groups) {
+    for (const bloque of grupo.blocks) {
+      if (!ADMITIDOS.has(bloque.type)) throw new Error(`bloque no admitido en «${grupo.title}»: ${bloque.type}`);
+    }
+  }
 
   // Dónde espera el flujo una respuesta: el bloque de botones en curso.
   let esperando = null;
